@@ -1,27 +1,8 @@
-#include<stdlib.h>
-#include<stdbool.h>
 #include<stdio.h>
 #include<string.h>
+#include "robot.h"
 
-#define DEBUG true //Debug Logs.
-
-/*Variables and Structs */
-typedef enum {NORTH,SOUTH,WEST,EAST}  cardinalPoint; 
-
-typedef enum {UP,DOWN,LEFT,RIGHT} direction;
-
-char points[4][6]={"NORTH","SOUTH","EAST","WEST"};
-
-typedef struct {
-	int posX;
-	int posY;
-	cardinalPoint facing;
-} Playable;
-
-/* Fields will count to fieldX+1 since 0 counts. */
-int mFieldWidth=5;
-int mFieldHeight=5; 
-bool cardinalMovement=false;
+static const char points[][6]={"NORTH","SOUTH","EAST","WEST"};
 
 /* Methods */
 void turnLeft(Playable * playable){
@@ -58,69 +39,131 @@ void turnRight(Playable * playable){
 			playable->facing=NORTH;
 			break;
 	};
-	if(DEBUG){
+	if(_ROBOT_DEBUG){
 		printf("Now facing: %s \n",points[playable->facing]);
 	}
 }
 
-bool canMove(Playable * playable, direction d, char * obstacles){
-	if(d==RIGHT && playable->posX>=mFieldWidth && ) {return false};
-
-}
-bool canMoveRight(Playable * playable,int fieldWidth,int fieldHeight) {
-	if(playable->posX>fieldHeight-1)return false;
-	else return true;
-}
-
-bool canMoveLeft(Playable * playable) {
-	if(playable->posX<1)return false;
-	else return true;
+bool canMoveRight(Playable * playable,Field * field) {
+	int posX=playable->posX;
+	if(posX>=field->width){
+		return false;
+	} 
+	if(hasObstacle(field,playable->posY,posX+1)){
+		return false;	
+	}
+	return true;
 }
 
-bool canMoveUp(Playable * playable) {
-	if(playable->posY>mFieldHeight-1) return false;
-	else return true;
+bool canMoveLeft(Playable * playable,Field * field) {
+	int posX=playable->posX;
+	if(posX<=0){
+		return false;
+	} 
+	if(hasObstacle(field,playable->posY,posX-1)){
+		return false;	
+	}
+	return true;
 }
 
-bool canMoveDown(Playable * playable) {
-	if(playable->posY<1)return false;
-	else return true;
+/*Some problem, since the string begin in 0, 0 will be the top, not the bottom, so the logic is switched with canMoveDown()*/
+bool canMoveUp(Playable * playable,Field * field) {
+	int posY=playable->posY;
+	if(posY<=0){
+		return false;
+	} 
+	if(hasObstacle(field,posY-1,playable->posX)){
+		return false;	
+	}
+	return true;
 }
 
-void cardinalMove(Playable * playable){
-	//Y cardinal points
-	if(playable->facing==SOUTH && canMoveDown(playable)){playable->posY-=1;}
-	if(playable->facing==NORTH && canMoveUp(playable)){playable->posY+=1;}
-			
-	//X cardinal points
-	if(playable->facing==WEST && canMoveLeft(playable)){playable->posX-=1;}
-	if(playable->facing==EAST && canMoveRight(playable)){playable->posX+=1;}
-	if(DEBUG){
+bool canMoveDown(Playable * playable,Field * field) {
+	int posY=playable->posY;
+	if(posY>=field->height){
+		return false;
+	} 
+	if(hasObstacle(field,posY+1,playable->posX)){
+		return false;	
+	}
+	return true;
+}
+
+bool cardinalMove(Playable * playable,Field * field){
+	
+	switch(playable->facing){
+		case SOUTH:
+			if(canMoveDown(playable,field)){
+				playable->posY+=1;
+				return true;
+			}
+			break;
+		case NORTH:
+			if(canMoveUp(playable,field)){
+				playable->posY-=1;
+				return true;
+			}
+			break;
+		case WEST:
+			if(canMoveLeft(playable,field)){
+				playable->posX-=1;
+				return true;
+			}
+			break;
+		case EAST:
+			if(canMoveRight(playable,field)){
+				playable->posX+=1;
+				return true;
+			}
+			break;
+	};
+	if(_ROBOT_DEBUG){
 		printf(" x: %i",playable->posX);
 		printf(" y: %i",playable->posY);
 		printf("(%s)\n",points[playable->facing]);
 	}
 }
 
-void move(Playable * playable, direction d){
+bool move(Playable * playable,Field * field, direction d){
+	bool r=false;
+	switch(d){
+		case DOWN:
+			if(canMoveDown(playable,field)){
+				playable->posY+=1;
+				r=true;
+			}
+			break;
+		case UP:
+			if(canMoveUp(playable,field)){
+				playable->posY-=1;
+				r=true;
+			}
+			break;
+		case LEFT:
+			if(canMoveLeft(playable,field)){
+				playable->posX-=1;
+				r=true;
+			}
+			break;
+		case RIGHT:
+			if(canMoveRight(playable,field)){
+				playable->posX+=1;
+				r=true;
+			}
+			break;
+	};
 	
-	//Y cardinal points
-	if(d==DOWN && canMoveDown(playable)){playable->posY-=1;}
-	if(d==UP && canMoveUp(playable)){playable->posY+=1;}
-			
-	//X cardinal points
-	if(d==LEFT && canMoveLeft(playable)){playable->posX-=1;}
-	if(d==RIGHT && canMoveRight(playable)){playable->posX+=1;}
-	if(DEBUG){
+	//if(DEBUG){
 		printf(" x: %i",playable->posX);
 		printf(" y: %i \n",playable->posY);
-	}
+	//};
+	return r;	
 }
 
-void singleOrder(Playable * playable,char singleChar){
+void singleOrder(Playable * playable,Field * field,char singleChar){
 	switch (singleChar){
 		case 'M':
-			cardinalMove(playable);
+			cardinalMove(playable,field);
 			break;
 		case 'L':
 			turnLeft(playable);
@@ -129,24 +172,8 @@ void singleOrder(Playable * playable,char singleChar){
 			turnRight(playable);
 			break;
 		default:
-			printf(" R U TRYIN TO MAKE ME EXPLODE??\n");
+			//printf(" R U TRYIN TO MAKE ME EXPLODE??\n");
 			break;
 			
 	}
 }
-
-int main(int argc, char **argv){
-	if(argc<2){printf("ROBOT NEED COMMANDS!");return -1;}
-	//With structs implementation we can use more instances, maybe for mobs.
-	Playable player={0,0,NORTH};
-	int x;
-	//if we wish to use cardinal directions to orientate the mob.
-	 for(x = 0; x<strlen(argv[1]); x++){
-		if(cardinalMovement) {
-			singleOrder(&player,argv[1][x]);
-		} else {
-			move(&player,NORTH);
-			}
-		}
-	return 0;
-	}
