@@ -153,10 +153,10 @@ bool move(Playable * playable,Field * field, direction d){
 			break;
 	};
 	
-	//if(DEBUG){
+	if(_ROBOT_DEBUG){
 		printf(" x: %i",playable->posX);
 		printf(" y: %i \n",playable->posY);
-	//};
+	};
 	return r;	
 }
 

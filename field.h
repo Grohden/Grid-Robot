@@ -6,16 +6,15 @@
 #define _FIELD_DEBUG false //Debug Logs.
 #endif
 
-
 /* Obstacles must end with \0, and must contain all characters that represent obstacles */
 typedef struct Field {
 	int width;
 	int height;
 	char obstacles[20];
-	char representation[21][21]; //intended do be used with malloc/alloc
+	char ** representation; //intended do be used with malloc/alloc
 } Field;
 
 bool hasObstacle(Field * field,int row,int col);
 
-void printField(Field * field);
+void readGameField(Field * field, char * fileName);
 #endif

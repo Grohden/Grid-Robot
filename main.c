@@ -1,36 +1,49 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include "robot.h"
+#include<windows.h>
+#include<conio.h>
 #include "field.h"
+#include "robot.h"
+
+#define PLAYER 254
 
 /* run this program using the console pauser or add your own getch, system("pause") or input loop */
+void mgotoxy(int x,int y){	COORD p={x,y};
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),p);
+};
+
+void hidecursor(){
+   HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+   CONSOLE_CURSOR_INFO info;
+   info.dwSize = 100;
+   info.bVisible = FALSE;
+   SetConsoleCursorInfo(consoleHandle, &info);
+}
 
 int main(int argc, char *argv[]) {
 	char tecla;
 	int d;
-	Field testField={21,7,"*:)",
-		{"********************",
-		 "*                  *",
-		 "*                  *",
-		 "*         :)       *",
-		 "*                  *",
-		 "*                # *",
-		 "********************"}
-	};
+	Field testField;
+	readGameField(&testField,"test.txt");
+	char obst[12]={201,202,203,204,185,206,186,200,205,187,188,0};
+	
+	strcpy(testField.obstacles,obst);
 	
 	Playable p;
 	p.posX=1;
 	p.posY=1;
-	
-	testField.representation[p.posY][p.posX]='O';
-	
+
 	printField(&testField);
+	hidecursor();
+	mgotoxy(p.posX,p.posY);
+	printf("%c",PLAYER);
+	
 	do {
-		testField.representation[p.posY][p.posX]=' ';
-		
+	
 		//docs for windows says that for arrow keys getch() && getche() must be called twice.
 		tecla=getch();
+		if(tecla==-32){
 		tecla=getch();
 		switch(tecla){
 			case UP:
@@ -46,18 +59,26 @@ int main(int argc, char *argv[]) {
 				d=LEFT;
 				break;
 		};
-		
+		//Clear last position.
+		mgotoxy(p.posX,p.posY);
+		printf("%c",' ');
+		//Move, update coordenates
 		move(&p,&testField,d);
-		//system("pause");
-		if(testField.representation[p.posY][p.posX]=='#'){ //victory tokken.
-	    	testField.representation[p.posY][p.posX]='O';
-	    	system("cls");
-	    	printField(&testField);
-			break;
-		} 
-		testField.representation[p.posY][p.posX]='O';
-		system("cls");
-		printField(&testField);
+		//Print new position.
+		mgotoxy(p.posX,p.posY);
+		printf("%c",PLAYER);
+		if(p.posX==77 && p.posY==5) break;
+		usleep(20000);
+		
+		mgotoxy(20,20);
+		printf("x:%d, y:%d   ",p.posX,p.posY);
+		}
 	} while(true);
+	char ** tst;
+	system("cls");
+	drawBox(20,10);
+	mgotoxy((20/2)-3,10/2);
 	puts("U won!");
+	
+	mgotoxy(1,21);
 }
