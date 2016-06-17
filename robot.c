@@ -80,7 +80,7 @@ bool canMoveUp(Playable * playable,Field * field) {
 
 bool canMoveDown(Playable * playable,Field * field) {
 	int posY=playable->posY;
-	if(posY>=field->height){
+	if(posY>=field->height-1){
 		return false;
 	} 
 	if(hasObstacle(field,posY+1,playable->posX)){

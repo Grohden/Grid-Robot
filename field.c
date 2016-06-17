@@ -30,6 +30,7 @@ char * drawTop(int width){
 	str[width+1]=0;
 	return str;
 };
+
 char * drawMiddle(int width){
 	int x;
 	char * str=(char *) calloc(width+1,sizeof(char));
@@ -43,6 +44,7 @@ char * drawMiddle(int width){
 	str[width+1]=0;
 	return str;
 };	
+
 char * drawBottom(int width){
 	int x;
 	char * str=(char *) calloc(width+1,sizeof(char));
@@ -57,26 +59,18 @@ char * drawBottom(int width){
 	return str;
 };
 
-void printField(Field * field){
-	int x;
-	for(x=0;x<field->height;x++){
-		printf("%s",field->representation[x]);
-	}
-}
-
 void drawBox(int width,int height, char ** destination){
-
-	char ** list= (char *) calloc(height,sizeof(char));
-	int x;
-	list[0]=drawTop(width);
-	printf("%s\n",list[0]);
-	for(x=1;x<height;x++){
-		list[x]=drawMiddle(width);
-		printf("%s\n",list[x]);
-	}
-	list[width]=drawBottom(width);
-	printf("%s\n",list[width]);
-	destination=list;
+    int x;
+    
+    //Topper
+    destination[0]=(char *) drawTop(width);
+    
+    //Middle
+    for(x=1;x<height-1;x++){
+        destination[x]=(char *) drawMiddle(width);
+    }
+    //Bottom
+    destination[height-1]=(char *) drawBottom(width);
 }
 
 void readGameField(Field * field, char * fileName){
@@ -85,18 +79,16 @@ void readGameField(Field * field, char * fileName){
 	int i=0;
 	char text[150];
 	
-	FILE * arq = fopen("cenario.txt", "r");
+	FILE * arq = fopen(fileName, "r");
 	
-
 	fscanf(arq,"%i",&qtdLine);
-	qtdLine-=1;
+	qtdLine-=2;
 	field->height=qtdLine;
 	fscanf(arq,"%i",&qtdCol);
-	field->width=qtdCol;
+	field->width=qtdCol-1;
 	//To break string in a bi-dimensional array
-	char ** final = (char *) calloc(qtdLine,sizeof(char));
+	char ** final = calloc(qtdLine*qtdCol,sizeof(char));
 	
-	final[0]=(char *) calloc(qtdCol,sizeof(char)); //TODO:find why i need this line.
 	fgets(text,150,arq);
 	
 	//characters convertions to ansii extended.
@@ -117,6 +109,20 @@ void readGameField(Field * field, char * fileName){
 				case '-':text[x]=205;break;
 				case '|':text[x]=186;break;
 				case '*':text[x]=' ';break;
+				
+				case '#':
+					text[x]=176;
+					field->finalPos[0]=x;
+					field->finalPos[1]=i;
+					break;
+				case '@':
+					text[x]=' ';
+					field->startPos[0]=x;
+					field->startPos[1]=i;
+					break;
+				/*default: 
+					text[x]=177;
+					break;*/
 			}
 		}
 		final[i]=(char *) calloc(qtdCol,sizeof(char));

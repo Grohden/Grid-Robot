@@ -11,10 +11,20 @@ typedef struct Field {
 	int width;
 	int height;
 	char obstacles[20];
+	char startPos[2];
+	char finalPos[2];
 	char ** representation; //intended do be used with malloc/alloc
 } Field;
 
 bool hasObstacle(Field * field,int row,int col);
+
+void drawBox(int width,int height, char ** destination);
+
+char * drawBottom(int width);
+
+char * drawMiddle(int width);
+
+char * drawTop(int width);
 
 void readGameField(Field * field, char * fileName);
 #endif
