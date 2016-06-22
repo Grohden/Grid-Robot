@@ -97,6 +97,7 @@ void readGameField(Field * field, char * fileName){
 		text[qtdCol+1]=0;
 		for(x=0;x<qtdCol;x++){
 			switch(text[x]){
+				/*
 				case '1':text[x]=201;break;
 				case '2':text[x]=187;break;
 				case '3':text[x]=200;break;
@@ -108,8 +109,8 @@ void readGameField(Field * field, char * fileName){
 				case '9':text[x]=206;break;
 				case '-':text[x]=205;break;
 				case '|':text[x]=186;break;
+				*/
 				case '*':text[x]=' ';break;
-				
 				case '#':
 					text[x]=176;
 					field->finalPos[0]=x;
@@ -120,9 +121,9 @@ void readGameField(Field * field, char * fileName){
 					field->startPos[0]=x;
 					field->startPos[1]=i;
 					break;
-				/*default: 
+				default: 
 					text[x]=177;
-					break;*/
+					break;
 			}
 		}
 		final[i]=(char *) calloc(qtdCol,sizeof(char));
