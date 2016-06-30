@@ -9,6 +9,7 @@
 
 typedef enum {NORTH,SOUTH,WEST,EAST}  cardinalPoint; 
 
+
 typedef enum {UP=72,DOWN=80,LEFT=75,RIGHT=77} direction; //Same numbers for keyboard arrow keys.
 
 typedef struct Playable {
@@ -32,15 +33,18 @@ bool canMoveUp(Playable * playable,Field * field);
 
 bool canMoveDown(Playable * playable,Field * field);
 
-/* This move the playble based on the actual direction (cardinalPoint facing),
- * and return if the character has been moved. */
+/* This move the playble based on the actual direction (NORTH, SOUTH, WEST, EAST),
+ * and return if the character has been moved. 
+ * EX: If we are facing NORTH, and this function is called, it moves forward (down in this case).
+ */
 bool cardinalMove(Playable * playable,Field * field);
 
-//This recives a single char: M(move, calls cardinalMove()), L and R (Left, Right, uses the turn functions)
+/* This recives a single char: M(move, calls cardinalMove()), L and R (Left, Right, uses the turn functions) */
 void singleOrder(Playable * playable,Field * field,char singleChar);
 
 /* This moves ignoring cardinal points, 
- * and return if the character has been moved. */ 
+ * and return if the character has been moved. 
+ */ 
 bool move(Playable * playable,Field * field, direction d);
 
 #endif

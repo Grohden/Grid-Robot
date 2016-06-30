@@ -3,6 +3,7 @@
 #include<malloc.h>
 #include<strings.h>
 
+
 bool hasObstacle(Field * field,int row,int col){
 	int cont;
 	for(cont=0;cont<=strlen(field->obstacles)+1;cont++) {

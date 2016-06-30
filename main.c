@@ -23,6 +23,7 @@ char obst[13]={177,201,202,203,204,185,206,186,200,205,187,188,0}; //walls and c
 
 /* run this program using the console pauser or add your own getch, system("pause") or input loop */
 
+/*Creates a message box with one option (i know, it is useless since we have list(), may i change this to a pop-up with timer*/
 void messageBox(char * str, int strSize){
 	system("cls");
 	
@@ -44,6 +45,7 @@ void messageBox(char * str, int strSize){
 	printf("%s",str);
 }
 
+/*Intended to print the representation of Field struct in center of screen */
 void printField(Field * field){
 	int x;
 	int centerVertical=(SCREEN_HEIGHT/2)-(field->height/2);
@@ -55,7 +57,9 @@ void printField(Field * field){
 	}
 }
 
+/*This thing should be avoided, just done in hurry.*/
 int levelCounter=1;
+/*Labirinthy game, ending with snake game in last level.*/
 void playGame(){
 	char tecla;
 	int score=0;
@@ -141,6 +145,7 @@ void playGame(){
 
 };
 
+/*Snake game, imcomplete, some limitations with array.*/
 void snake(char * campo){
 	char key;
 	int d;
@@ -218,6 +223,7 @@ void snake(char * campo){
 	mainMenu();
 }
 
+/*Create the menu options and some submenus*/
 void mainMenu(){
 	char *options[10]={"Labirinto","Snake","Records","Creditos","Sair"};
 	char *creators[20]={"Gabriel de Oliveira Rohden","Leonardo Tadeu Diniz Leal","","Code Found at:","https://github.com/Grohden/Grid-Robot/tree/C"};
@@ -251,6 +257,7 @@ void mainMenu(){
 	mgotoxy(1,35);
 }
 
+/* This function draw a box and put in the middle of screen, and put the options on center*/
 int list(char * options[],int numberOfOptions,int sizeOfOptions){
     int cols=SCREEN_WIDTH;
     int lines=SCREEN_HEIGHT;
@@ -282,7 +289,13 @@ int list(char * options[],int numberOfOptions,int sizeOfOptions){
 	mgotoxy(1,35);
 }
 
+/* This function uses the list function and implement arrow keys listening to navigate the options.
+ * it returns the number of chosed option.
+ */
 int selectableList(char * options[],int numberOfOptions,int sizeOfOptions){
+	if(kbhit()){
+		getch(); //prevent acidental enters
+	}
 	list(options,numberOfOptions,sizeOfOptions);
 	int boxCols=SCREEN_WIDTH/2;
     int boxLines=SCREEN_HEIGHT/2;
@@ -294,8 +307,8 @@ int selectableList(char * options[],int numberOfOptions,int sizeOfOptions){
 	mgotoxy(boxCols-(itemsSize/2),boxLines+selectedOption);
 	printf(options[selectedOption+halfOpts]);
 	
-	hidecursor();
 	char key;
+	hidecursor();	
 	do{
 		key=getch();
 		if(key==-32){ //if its a arrow key
